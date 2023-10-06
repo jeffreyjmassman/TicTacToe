@@ -472,8 +472,8 @@ void TicTacToe::resetGame() {
 
 void TicTacToe::endGame() {
     cout << "Okay. Here are the results: \n" << endl;
-    cout << "\x1b[31mYour score: \x1b[0m" << playerScore << endl;
-    cout << "\x1b[32mComputer score: \x1b[0m" << computerScore << endl;
+    cout << "\x1b[32mYour score: \x1b[0m" << playerScore << endl;
+    cout << "\x1b[31mComputer score: \x1b[0m" << computerScore << endl;
     cout << "\x1b[33mTies: \x1b[0m" << tieScore << "\n" << endl;
     cout << "Thanks for playing!" << endl;
     keepPlaying = false;
