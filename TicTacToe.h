@@ -4,6 +4,7 @@
 class TicTacToe {
     private:
         std::vector<std::vector<std::string> > board;
+        std::vector<std::vector<std::string> > colors;
         int moveCount;
         int playerScore;
         int computerScore;

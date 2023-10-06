@@ -18,9 +18,12 @@ TicTacToe::TicTacToe() {
     firstMove = true;
     for (int x = 0; x < 3; x++) {
         vector<string> vec;
+        vector<string> vec2;
         board.push_back(vec);
+        colors.push_back(vec2);
         for (int y = 0; y < 3; y++) {
             board[x].push_back(" ");
+            colors[x].push_back(" ");
         }
     }
 }
@@ -47,15 +50,26 @@ void TicTacToe::game() {
 }
 
 void TicTacToe::printGame() {
+    for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+            if (board[x][y] == "X") {
+                colors[x][y] = "\x1b[32mX\x1b[0m"; //green
+                continue;
+            }
+            if (board[x][y] == "O") {
+                colors[x][y] = "\x1b[31mO\x1b[0m"; //red
+            }
+        }
+    }
     cout << "\n \n \n \n \n \n \n \n " << endl;
     cout << "                                   0   1   2" << endl;
-    cout << "                                0  " << board[0][0] << " | " << board[1][0] << " | " << board[2][0] << endl;
+    cout << "                                0  " << colors[0][0] << " | " << colors[1][0] << " | " << colors[2][0] << endl;
     //cout << "                                  ___________" << endl;
     cout << "                                  ===========" << endl;
-    cout << "                                1  "<< board[0][1] << " | " << board[1][1] << " | " << board[2][1] << endl;
+    cout << "                                1  "<< colors[0][1] << " | " << colors[1][1] << " | " << colors[2][1] << endl;
     //cout << "                                  ___________" << endl;
     cout << "                                  ===========" << endl;
-    cout << "                                2  "<< board[0][2] << " | " << board[1][2] << " | " << board[2][2] << endl;
+    cout << "                                2  "<< colors[0][2] << " | " << colors[1][2] << " | " << colors[2][2] << endl;
     cout << "\n \n \n \n \n \n \n \n" << endl;
 }
 
@@ -449,6 +463,7 @@ void TicTacToe::resetGame() {
     for (int x = 0; x < 3; x++) {
         for (int y = 0; y < 3; y++) {
             board[x][y] = " ";
+            colors[x][y] = " ";
         }
     }
     moveCount = 0;
@@ -456,10 +471,10 @@ void TicTacToe::resetGame() {
 }
 
 void TicTacToe::endGame() {
-    cout << "Okay. Here are the results:" << endl;
-    cout << "Your score: " << playerScore << endl;
-    cout << "Computer score: " << computerScore << endl;
-    cout << "Ties: " << tieScore << endl;
+    cout << "Okay. Here are the results: \n" << endl;
+    cout << "\x1b[31mYour score: \x1b[0m" << playerScore << endl;
+    cout << "\x1b[32mComputer score: \x1b[0m" << computerScore << endl;
+    cout << "\x1b[33mTies: \x1b[0m" << tieScore << "\n" << endl;
     cout << "Thanks for playing!" << endl;
     keepPlaying = false;
 }
@@ -469,7 +484,7 @@ void TicTacToe::playAgain() {
     cout << "Do you want to play again? 1 or 0: ";
     cin >> play;
     if (play) {
-        cout << "Okay! Starting new game.";
+        cout << "Okay! Starting new game. \n";
         this->resetGame();
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     }
@@ -482,11 +497,11 @@ bool TicTacToe::isWinner() {
     vector<bool> wincheck = this->winner();
     if (wincheck[0]) {
         if (wincheck[1]) {
-            cout << "Congratulations! You have won!" << endl;
+            cout << "\x1b[32mCongratulations! You have won!\x1b[0m" << endl;
             playerScore++;
         }
         else {
-            cout << "Sorry, but the computer has won." << endl;
+            cout << "\x1b[31mSorry, but the computer has won.\x1b[0m" << endl;
             computerScore++;
         }
         return true;
@@ -496,7 +511,7 @@ bool TicTacToe::isWinner() {
 
 bool TicTacToe::isTie() {
     if (moveCount == 9) {
-        cout << "The game is a tie!" << endl;
+        cout << "\x1b[33mThe game is a tie!\x1b[0m" << endl;
         tieScore++;
         return true;
     }
