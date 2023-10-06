@@ -74,7 +74,8 @@ void TicTacToe::printGame() {
 }
 
 vector<bool> TicTacToe::winner() {
-    //vector encodes whether or not there was a winner, and if so, who it was. whowon[0] = is there a winner?
+    //vector encodes whether or not there was a winner, 
+    //and if so, who it was. whowon[0] = is there a winner?
     // whowon[1] = who was it? true = X, false = O
     vector<bool> whowon;
     whowon.push_back(false);
@@ -113,12 +114,12 @@ vector<bool> TicTacToe::winner() {
     string first = board[0][0];
     if (board[1][1] == first && board[2][2] == first) {
         if (first == "X") {
-                whowon[0] = true;
-                whowon[1] = true;
-            }
+            whowon[0] = true;
+            whowon[1] = true;
+        }
         if (first == "O") {
-                whowon[0] = true;
-                whowon[1] = false;
+            whowon[0] = true;
+            whowon[1] = false;
         }
         return whowon;
     }
@@ -126,12 +127,12 @@ vector<bool> TicTacToe::winner() {
     first = board[0][2];
     if (board[1][1] == first && board[2][0] == first) {
         if (first == "X") {
-                whowon[0] = true;
-                whowon[1] = true;
-            }
+            whowon[0] = true;
+            whowon[1] = true;
+        }
         if (first == "O") {
-                whowon[0] = true;
-                whowon[1] = false;
+            whowon[0] = true;
+            whowon[1] = false;
         }
         return whowon;
     }
@@ -149,7 +150,8 @@ void TicTacToe::playerMakeMove() {
         if (board[x][y] == " ") {
             break;
         }
-        cout << "Sorry, there is already an " << board[x][y] << " at that space. Please pick another one." << endl;
+        cout << "Sorry, there is already an " << board[x][y] << " at "
+         "that space. Please pick another one." << endl;
     }
     cout << "\n" << endl;
     board[x][y] = "X";
@@ -157,27 +159,52 @@ void TicTacToe::playerMakeMove() {
 }
 
 void TicTacToe::computerMakeMove() {
+    //easy difficulty; randomly select coordinates
+    if (difficulty == 0) {
+        while(1) {
+            int valx = rand() % 3;
+            int valy = rand() % 3;
+            if (board[valx][valy] == " ") {
+                board[valx][valy] = "O";
+                moveCount++;
+                return;
+            }
+        }
+    }
     //if there are 0 or 1 moves, pick a random corner or the middle
     if (moveCount < 2) {
         while(1) {
-            int valx = rand() % 2;
-            int valy = rand() % 2;
-            //try for the middle randomly, 50% chance (not accounting for rand() bias)
-            int middle = rand() % 10;
-            if (middle < 5) {
-                if (board[1][1] == " ") {
-                    board[1][1] = "O";
+            if (difficulty == 1) {
+                // on medium, start out with a random move
+                int valx = rand() % 3;
+                int valy = rand() % 3;
+                if (board[valx][valy] == " ") {
+                    board[valx][valy] = "O";
                     moveCount++;
                     return;
                 }
             }
-            //otherwise, try a corner
-            int cornerx = (valx == 0) ? 0 : 2;
-            int cornery = (valy == 0) ? 0 : 2;
-            if (board[cornerx][cornery] == " ") {
-                board[cornerx][cornery] = "O";
-                moveCount++;
-                return;
+            if (difficulty == 2) {
+                // on hard, try for the middle or for the corners
+                int valx = rand() % 2;
+                int valy = rand() % 2;
+                //try for the middle randomly, 50% chance (not accounting for rand() bias)
+                int middle = rand() % 10;
+                if (middle < 5) {
+                    if (board[1][1] == " ") {
+                        board[1][1] = "O";
+                        moveCount++;
+                        return;
+                    }
+                }
+                //otherwise, try a corner
+                int cornerx = (valx == 0) ? 0 : 2;
+                int cornery = (valy == 0) ? 0 : 2;
+                if (board[cornerx][cornery] == " ") {
+                    board[cornerx][cornery] = "O";
+                    moveCount++;
+                    return;
+                }
             }
         }
     }
@@ -315,6 +342,88 @@ void TicTacToe::computerMakeMove() {
             }
         }
     }
+    if (difficulty == 2) {
+        //Try some tricks to win the game, e.g. setting up two 3-in-a-rows
+        //at the same time to force a win
+        if (board[0][0] == "O" && board[0][2] == "O") {
+            if (board[1][1] == " ") {
+                if (board[1][0] == " " && board[2][0] == " ") {
+                    board[2][0] = "O";
+                    moveCount++;
+                    return;
+                }
+                if (board[1][2] == " " && board[2][2] == " ") {
+                    board[2][2] = "O";
+                    moveCount++;
+                    return;
+                }
+            }
+        }
+        if (board[2][0] == "O" && board[2][2] == "O") {
+            if (board[1][1] == " ") {
+                if (board[0][0] == " " && board[1][0] == " ") {
+                    board[0][0] = "O";
+                    moveCount++;
+                    return;
+                }
+                if (board[1][2] == " " && board[0][2] == " ") {
+                    board[0][2] = "O";
+                    moveCount++;
+                    return;
+                }
+            }
+        }
+        if (board[0][0] == "O" && board[2][0] == "O") {
+            if (board[1][1] == " ") {
+                if (board[0][2] == " " && board[0][1] == " ") {
+                    board[0][2] = "O";
+                    moveCount++;
+                    return;
+                }
+                if (board[2][2] == " " && board[2][1] == " ") {
+                    board[2][2] = "O";
+                    moveCount++;
+                    return;
+                }
+            }
+        }
+        if (board[0][2] == "O" && board[2][2] == "O") {
+            if (board[1][1] == " ") {
+                if (board[0][0] == " " && board[0][1] == " ") {
+                    board[0][0] = "O";
+                    moveCount++;
+                    return;
+                }
+                if (board[2][0] == " " && board[2][1] == " ") {
+                    board[2][0] = "O";
+                    moveCount++;
+                    return;
+                }
+            }
+        }
+        if (board[1][1] == "O") {
+            if (board[0][1] == "O") {
+                if (board[0][2] == " " && board[0][0] == " " && board[2][1] == " ") {
+                    board[0][0] = " ";
+                }
+            }
+            if (board[1][0] == "O") {
+                if (board[0][0] == " " && board[2][0] == " " && board[1][2] == " ") {
+                    board[2][0] = " ";
+                }
+            }
+            if (board[2][1] == "O") {
+                if (board[2][0] == " " && board[2][2] == " " && board[0][1] == " ") {
+                    board[2][2] = " ";
+                }
+            }
+            if (board[1][2] == "O") {
+                if (board[0][2] == " " && board[2][2] == " " && board[1][0] == " ") {
+                    board[0][2] = " ";
+                }
+            }
+        }
+    }
     //Otherwise, find one O and place next to it
     for (int y = 0; y < 3; y++) {
         for (int x = 0; x < 3; x++) {
@@ -400,7 +509,8 @@ void TicTacToe::computerMakeMove() {
                     }
                 }
                 if (x == y) {
-                    //Technically since x == y, we only need to check of x < 3, but I'll keep for intuitive purposes
+                    //Technically since x == y, we only need
+                    // to check of x < 3, but I'll keep for intuitive purposes
                     if ( x+ 1 < 3 && y + 1 < 3) {
                         if (board[x+1][y+1] == " ") {
                             if (x + 2 < 3 && y + 2 < 3) {
@@ -472,8 +582,8 @@ void TicTacToe::resetGame() {
 
 void TicTacToe::endGame() {
     cout << "Okay. Here are the results: \n" << endl;
-    cout << "\x1b[32mYour score: \x1b[0m" << playerScore << endl;
-    cout << "\x1b[31mComputer score: \x1b[0m" << computerScore << endl;
+    cout << "\x1b[32mYour Score: \x1b[0m" << playerScore << endl;
+    cout << "\x1b[31mComputer Score: \x1b[0m" << computerScore << endl;
     cout << "\x1b[33mTies: \x1b[0m" << tieScore << "\n" << endl;
     cout << "Thanks for playing!" << endl;
     keepPlaying = false;
@@ -521,6 +631,22 @@ bool TicTacToe::isTie() {
 void TicTacToe::initialize() {
     srand(time(0));
     this->printGame();
+    difficulty = 0;
+    cout << "What difficulty would you like to play on? \n"
+    "Type '0' for \x1b[32measy\x1b[0m, '1' for \x1b[33mmedium\x1b[0m, "
+    "and '2' for \x1b[31mhard\x1b[0m. ";
+    cin >> difficulty;
+    string diffstring;
+    if (difficulty == 0) {
+        diffstring = "\x1b[32measy\x1b[0m";
+    }
+    else if (difficulty == 1) {
+        diffstring = "\x1b[33mmedium\x1b[0m";
+    }
+    else {
+        diffstring = "\x1b[31mhard\x1b[0m";
+    }
+    cout << "Very good. Your difficulty is set to " << diffstring << "." << endl;
     int goFirst = 0;
     cout << "Do you want to go first? Type '1' for yes, '0' for no: ";
     cin >> goFirst;
@@ -530,6 +656,7 @@ void TicTacToe::initialize() {
         this->computerMakeMove();
         this->printGame();
     }
-    cout << "Make a move! Type in first your desired x coordinate, then your y coordinate. \n" << endl;
+    cout << "Make a move! Type in first your "
+    "desired x coordinate, then your y coordinate. \n" << endl;
     firstMove = false;
 }
