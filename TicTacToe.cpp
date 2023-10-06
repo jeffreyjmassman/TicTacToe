@@ -4,13 +4,18 @@
 #include <vector>
 #include <string>
 #include <time.h>
+#include <thread>
+#include <chrono>
 
 using std::vector; using std::cout; using std::endl; using std::cin;
 using std::string;
 
-void TicTacToe::game() {
-    srand(time(0));
-    moveCount = 0;
+TicTacToe::TicTacToe() {
+    playerScore = 0;
+    computerScore = 0;
+    tieScore = 0;
+    keepPlaying = true;
+    firstMove = true;
     for (int x = 0; x < 3; x++) {
         vector<string> vec;
         board.push_back(vec);
@@ -18,39 +23,25 @@ void TicTacToe::game() {
             board[x].push_back(" ");
         }
     }
-    this->printGame();
-    //cout << "Do you want to go first?"
-    cout << "Make a move! Type in first your desired x coordinate, then your y coordinate. \n" << endl;
-    while (1) {
+}
+
+void TicTacToe::game() {
+    while (keepPlaying) {
+        if (firstMove) {
+            this->initialize();
+        }
         this->playerMakeMove();
         this->printGame();
-        vector<bool> wincheck = this->winner();
-        if (wincheck[0]) {
-            if (wincheck[1]) {
-                cout << "Congratulations! You have won!" << endl;
-                return;
-            }
-            else {
-                cout << "Sorry, but the computer has won." << endl;
-                return;
-            }
+        if (this->isWinner() || this->isTie()) {
+            playAgain();
+            continue;
         }
-        if (moveCount == 9) {
-            cout << "The game is a tie!" << endl;
-            return;
-        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         this->computerMakeMove();
         this->printGame();
-        wincheck = this->winner();
-        if (wincheck[0]) {
-            if (wincheck[1]) {
-                cout << "Congratulations! You have won!" << endl;
-                return;
-            }
-            else {
-                cout << "Computer wins! Better luck next time!" << endl;
-                return;
-            }
+        if (this->isWinner() || this->isTie()) {
+            playAgain();
+            continue;
         }
     }
 }
@@ -66,16 +57,6 @@ void TicTacToe::printGame() {
     cout << "                                  ===========" << endl;
     cout << "                                2  "<< board[0][2] << " | " << board[1][2] << " | " << board[2][2] << endl;
     cout << "\n \n \n \n \n \n \n \n" << endl;
-}
-
-void TicTacToe::test() {
-    for (int x = 0; x < 3; x++) {
-        vector<string> vec;
-        board.push_back(vec);
-        for (int y = 0; y < 3; y++) {
-           board[x].push_back("X");
-        }
-    }
 }
 
 vector<bool> TicTacToe::winner() {
@@ -462,4 +443,78 @@ void TicTacToe::computerMakeMove() {
             }
         }
     }
+}
+
+void TicTacToe::resetGame() {
+    for (int x = 0; x < 3; x++) {
+        for (int y = 0; y < 3; y++) {
+            board[x][y] = " ";
+        }
+    }
+    moveCount = 0;
+    firstMove = true;
+}
+
+void TicTacToe::endGame() {
+    cout << "Okay. Here are the results:" << endl;
+    cout << "Your score: " << playerScore << endl;
+    cout << "Computer score: " << computerScore << endl;
+    cout << "Ties: " << tieScore << endl;
+    cout << "Thanks for playing!" << endl;
+    keepPlaying = false;
+}
+
+void TicTacToe::playAgain() {
+    int play = 0;
+    cout << "Do you want to play again? 1 or 0: ";
+    cin >> play;
+    if (play) {
+        cout << "Okay! Starting new game.";
+        this->resetGame();
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+    }
+    else {
+        this->endGame();
+    }
+}
+
+bool TicTacToe::isWinner() {
+    vector<bool> wincheck = this->winner();
+    if (wincheck[0]) {
+        if (wincheck[1]) {
+            cout << "Congratulations! You have won!" << endl;
+            playerScore++;
+        }
+        else {
+            cout << "Sorry, but the computer has won." << endl;
+            computerScore++;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool TicTacToe::isTie() {
+    if (moveCount == 9) {
+        cout << "The game is a tie!" << endl;
+        tieScore++;
+        return true;
+    }
+    return false;
+}
+
+void TicTacToe::initialize() {
+    srand(time(0));
+    this->printGame();
+    int goFirst = 0;
+    cout << "Do you want to go first? Type '1' for yes, '0' for no: ";
+    cin >> goFirst;
+    if (!goFirst) {
+        cout << "Very well. The computer will make the first move." << endl;
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        this->computerMakeMove();
+        this->printGame();
+    }
+    cout << "Make a move! Type in first your desired x coordinate, then your y coordinate. \n" << endl;
+    firstMove = false;
 }
